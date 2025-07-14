@@ -1,0 +1,236 @@
+<% var paddingClass = "mt-2 pt-1"; %> <% layout("/layouts/boilerplate") %>
+
+<style>
+  .filters-container {
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 1.5rem;
+    padding-bottom: 1rem;
+    scrollbar-width: none;
+    margin-top: 0.5 !important;
+    padding-top: 0.25 !important;
+  }
+
+  .filters-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter {
+    text-align: center;
+    opacity: 0.7;
+    flex: 0 0 auto;
+  }
+
+  .filter:hover {
+    opacity: 1;
+    cursor: pointer;
+  }
+
+  .filter p {
+    font-size: 0.8rem;
+    margin: 0.2rem 0 0;
+  }
+
+  .tax-toggle {
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 576px) {
+    #filters {
+      display: none;
+    }
+
+    .dropdown-filters {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 5rem;
+    }
+  }
+
+  @media (min-width: 577px) {
+    .dropdown-filters {
+      display: none;
+    }
+  }
+
+  .tax-info {
+    display: none;
+  }
+
+  .tax-toggle{
+    border: 1px solid black;
+    border-radius: 1rem;
+    height: 3.5rem;
+    padding: 1rem;
+  }
+</style>
+
+<!-- Filter bar and dropdown -->
+<div class="filters-container mt-2 pt-1" id="filters">
+  <div class="filter">
+    <i class="fa-solid fa-fire"></i>
+    <p>Trending</p>
+  </div>
+  <div class="filter">
+    <i class="fa-solid fa-bed"></i>
+    <p>Rooms</p>
+  </div>
+  <div class="filter">
+    <i class="fa-solid fa-mountain-city"></i>
+    <p>Iconic Cities</p>
+  </div>
+  <div class="filter">
+    <i class="fa-solid fa-umbrella-beach"></i>
+    <p>Beach</p>
+  </div>
+  <div class="filter">
+    <i class="fa-solid fa-cable-car"></i>
+    <p>Cabins</p>
+  </div>
+  <div class="filter">
+    <i class="fa-solid fa-ghost"></i>
+    <p>OMG!</p>
+  </div>
+  <div class="filter">
+    <i class="fa-solid fa-person-swimming"></i>
+    <p>Arctic</p>
+  </div>
+  <div class="filter">
+    <i class="fa-solid fa-gopuram"></i>
+    <p>Temples</p>
+  </div>
+  <div class="filter">
+    <i class="fa-solid fa-volcano"></i>
+    <p>Wonders</p>
+  </div>
+
+  <div class="tax-toggle">
+    <div class="form-check form-switch">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        role="switch"
+        id="switchCheckDefault"
+      />
+      <label class="form-check-label" for="switchCheckDefault"
+        >Display total after tax</label
+      >
+    </div>
+  </div>
+</div>
+
+<!-- Mobile dropdown filter -->
+<div class="dropdown-filters">
+  <div class="dropdown">
+    <button
+      class="btn btn-outline-secondary dropdown-toggle"
+      type="button"
+      data-bs-toggle="dropdown"
+    >
+      Filter Categories
+    </button>
+    <ul class="dropdown-menu">
+      <li>
+        <a class="dropdown-item" href="#"
+          ><i class="fa-solid fa-fire me-2"></i>Trending</a
+        >
+      </li>
+      <li>
+        <a class="dropdown-item" href="#"
+          ><i class="fa-solid fa-bed me-2"></i>Rooms</a
+        >
+      </li>
+      <li>
+        <a class="dropdown-item" href="#"
+          ><i class="fa-solid fa-mountain-city me-2"></i>Iconic Cities</a
+        >
+      </li>
+      <li>
+        <a class="dropdown-item" href="#"
+          ><i class="fa-solid fa-umbrella-beach me-2"></i>Beach</a
+        >
+      </li>
+      <li>
+        <a class="dropdown-item" href="#"
+          ><i class="fa-solid fa-cable-car me-2"></i>Cabins</a
+        >
+      </li>
+      <li>
+        <a class="dropdown-item" href="#"
+          ><i class="fa-solid fa-ghost me-2"></i>OMG!</a
+        >
+      </li>
+      <li>
+        <a class="dropdown-item" href="#"
+          ><i class="fa-solid fa-person-swimming me-2"></i>Arctic</a
+        >
+      </li>
+      <li>
+        <a class="dropdown-item" href="#"
+          ><i class="fa-solid fa-gopuram me-2"></i>Temples</a
+        >
+      </li>
+      <li>
+        <a class="dropdown-item" href="#"
+          ><i class="fa-solid fa-volcano me-2"></i>Wonders</a
+        >
+      </li>
+    </ul>
+  </div>
+
+  <div class="tax-toggle">
+    <div class="form-check form-switch">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        role="switch"
+        id="switchCheckDefault2"
+      />
+      <label class="form-check-label" for="switchCheckDefault2"
+        >After tax</label
+      >
+    </div>
+  </div>
+</div>
+
+<!-- Listing Cards -->
+<div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
+  <% for(let listing of allListings) { %>
+  <a href="/listings/<%= listing._id %>" class="listing-link">
+    <div class="card col listing-card">
+      <img
+        src="<%= listing.image.url %>"
+        class="card-img-top"
+        alt="listing_image"
+        style="height: 20rem"
+      />
+      <div class="card-img-overlay"></div>
+      <div class="card-body">
+        <p class="card-text">
+          <b><%= listing.title %></b><br />
+          ₹<%= listing.price.toLocaleString("en-IN") %> / night
+          <i class="tax-info"> &nbsp; &nbsp;+18% GST</i>
+        </p>
+      </div>
+    </div>
+  </a>
+  <% } %>
+</div>
+
+<script>
+  let taxSwitch = document.getElementById("switchCheckDefault");
+  taxSwitch.addEventListener("click", () => {
+    let taxInfo = document.getElementsByClassName("tax-info");
+    for (info of taxInfo) {
+      if (info.style.display != "inline") {
+        info.style.display = "inline";
+      } else {
+        info.style.display = "none";
+      }
+    }
+  });
+</script>
