@@ -1,3 +1,6 @@
+import { index as showHome } from "./controllers/listing.js";
+
+
 import "./init/env.js"; // ← MUST be first
 
 import express from "express";
@@ -91,8 +94,7 @@ app.use((req, res, next) => {
 });
 
 // ✅ Home route shows listings directly
-const allListings = await Listing.find({});
-res.render("listings/index.ejs", { allListings });
+app.get("/", showHome);
 
 
 // Routes
