@@ -1,4 +1,5 @@
-import { index as showHome } from "./controllers/listing.js";
+import { index as showHome } from "./controllers/listings.js";
+
 
 
 import "./init/env.js"; // ← MUST be first
