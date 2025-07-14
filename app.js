@@ -1,6 +1,3 @@
-import { index as showAllListings } from "./controllers/listings.js";
-import wrapAsync from "./utils/wrapAsync.js";
-
 import "./init/env.js"; // ← MUST be first
 
 import express from "express";
@@ -19,6 +16,7 @@ import flash from "connect-flash";
 import passport from "passport";
 import LocalStrategy from "passport-local";
 import User from "./models/user.js";
+import Listing from "./models/listing.js"; // ✅ Required to load listings on "/"
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -26,9 +24,10 @@ const __dirname = path.dirname(__filename);
 
 const dbUrl = process.env.ATLASDB_URL;
 
+// Connect to MongoDB
 main()
   .then(() => {
-    console.log("connected to DB");
+    console.log("Connected to DB");
   })
   .catch((err) => {
     console.log(err);
@@ -38,19 +37,23 @@ async function main() {
   await mongoose.connect(dbUrl);
 }
 
+// View engine setup
+app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+
+// Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
-app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
 
+// Session store
 const store = MongoStore.create({
   mongoUrl: dbUrl,
   crypto: {
     secret: process.env.SECRET,
   },
-  touchAfter: 24 * 3600, // time in seconds
+  touchAfter: 24 * 3600,
 });
 
 store.on("error", function (e) {
@@ -69,18 +72,17 @@ const sessionOptions = {
   },
 };
 
-app.get("/", wrapAsync(showAllListings));
-
 app.use(session(sessionOptions));
 app.use(flash());
 
+// Passport config
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
-
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+// ✅ Set locals before any route handlers
 app.use((req, res, next) => {
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
@@ -88,30 +90,30 @@ app.use((req, res, next) => {
   next();
 });
 
-// app.get("/demouser", async (req, res) => {
-//   let fakeUser = new User({
-//     email: "student@gmail.com",
-//     username: "student",
-//   });
-//   const registeredUser =  await User.register(fakeUser, "helloworld");
-//   res.send(registeredUser);
-// });
+// ✅ Home route shows listings directly
+app.get("/", async (req, res) => {
+  const listings = await Listing.find({});
+  res.render("listings/index.ejs", { listings });
+});
 
+// Routes
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 
+// 404 handler
 app.use((req, res, next) => {
   next(new ExpressError(404, "Page Not Found!"));
 });
 
+// Global error handler
 app.use((err, req, res, next) => {
   console.error("ERROR:", err);
-  let { statusCode = 500, message = "Something went wrong" } = err;
+  const { statusCode = 500, message = "Something went wrong" } = err;
   res.status(statusCode).render("error.ejs", { message });
-  // .send(messsage);
 });
 
+// Start server
 app.listen(8080, () => {
-  console.log("Server is listenning to port 8080");
+  console.log("Server is listening on port 8080");
 });
