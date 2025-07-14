@@ -91,10 +91,9 @@ app.use((req, res, next) => {
 });
 
 // ✅ Home route shows listings directly
-app.get("/", async (req, res) => {
-  const listings = await Listing.find({});
-  res.render("listings/index.ejs", { listings });
-});
+const allListings = await Listing.find({});
+res.render("listings/index.ejs", { allListings });
+
 
 // Routes
 app.use("/listings", listingRouter);

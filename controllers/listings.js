@@ -5,8 +5,10 @@ const geocodingClient = mbxGeocoding({ accessToken: mapToken });
 
 const index = async (req, res) => {
   const allListings = await Listing.find({});
-  res.render("listings/index.ejs", { listings });
+  res.render("listings/index.ejs", { listings: allListings }); // ✅ renamed to match EJS
+ // send correct variable name
 };
+
 
 const renderNewForm = (req, res) => {
   res.render("listings/new.ejs");
