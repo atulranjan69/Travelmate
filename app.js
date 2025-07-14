@@ -1,3 +1,6 @@
+import { index as showAllListings } from "./controllers/listings.js";
+import wrapAsync from "./utils/wrapAsync.js";
+
 import "./init/env.js"; // ← MUST be first
 
 import express from "express";
@@ -66,9 +69,7 @@ const sessionOptions = {
   },
 };
 
-app.get("/", (req, res) => {
-  res.render("home.ejs");
-});
+app.get("/", wrapAsync(showAllListings));
 
 app.use(session(sessionOptions));
 app.use(flash());
